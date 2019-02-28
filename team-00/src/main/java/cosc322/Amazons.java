@@ -126,7 +126,7 @@ public class Amazons extends GamePlayer{
 	ar[1] = acol;
 
 	//To send a move message, call this method with the required data  
-	//this.gameClient.sendMoveMessage(qf, qn, ar);
+//	this.gameClient.sendMoveMessage(qf, qn, ar);
 	
 	//Task: Replace the above with a timed task to wait for 10 seconds befor sending the move
 	
@@ -415,8 +415,6 @@ public class Amazons extends GamePlayer{
 			gameBoard[arow][acol] = BoardGameModel.POS_MARKED_ARROW;
 		}
 		
-		//System.out.println(this.toString());
-		
 		return valid;
 	}	
 	
@@ -461,6 +459,5 @@ public class Amazons extends GamePlayer{
     public static void main(String[] args) { 
 	Amazons game01 = new Amazons("player-01", "01");
 	Amazons game02 = new Amazons("player-02", "02");
-	//Amazons game = new Amazons(args[0], args[1]);		
     }
 }//end of Amazon
