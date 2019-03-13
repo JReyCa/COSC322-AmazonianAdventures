@@ -32,30 +32,7 @@ public class GameDisplay extends JPanel {
         this.gameModel = gameModel;
         this.boardSize = gameModel.getSize();
         
-        initialize();
         repaint();
-    }
-    
-    // put the queens in their proper places
-    private void initialize() {
-        gameModel.setQueen(0, 3, true);
-        gameModel.setQueen(0, 6, true);
-        gameModel.setQueen(2, 0, true);
-        gameModel.setQueen(2, 9, true);
-        gameModel.setQueen(7, 0, false);
-        gameModel.setQueen(7, 9, false);
-        gameModel.setQueen(9, 3, false);
-        gameModel.setQueen(9, 6, false);
-    }
-    
-    private boolean markPosition(int newQueenRow, int newQueenColumn,
-                              int arrowRow, int arrowColumn,
-                              int oldQueenRow, int oldQueenColumn) {
-        boolean isValid = gameModel.makeMove(newQueenRow, newQueenColumn,
-                                             arrowRow, arrowColumn,
-                                             oldQueenRow, oldQueenColumn);
-        repaint();
-        return isValid;
     }
     
     // this is a mysterious jframe method
