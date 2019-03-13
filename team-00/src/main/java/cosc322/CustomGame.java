@@ -13,15 +13,41 @@ import javax.swing.JFrame;
 public class CustomGame {
     private JFrame guiFrame;
     private BoardModel model;
+    private GameDisplay display;
+    
+    public static void main(String[] args) {
+        CustomGame game = new CustomGame();
+    }
     
     public CustomGame() {
         this.model = new BoardModel(10);
-        setupGUI(this.model);
+        this.display = new GameDisplay(this.model);
+        setupGUI();
         
-        this.model.makeMove(0, 5, 1, 5, 0, 3);
+//        makeMove(9, 6, 8, 5, 8, 3, "test");
     }
     
-    private void setupGUI(BoardModel model){
+    
+    public void makeMove(int[] oldQueenPosition,
+                         int[] newQueenPosition,
+                         int[] arrowPosition,
+                         String playerName) {
+        String moveMessage = model.makeMove(oldQueenPosition,
+                                            newQueenPosition,
+                                            arrowPosition);
+        if (moveMessage.equalsIgnoreCase(model.VALID)) {
+            display.repaint();
+            System.out.println(playerName + " moved:\n"
+                            + "Queen at [" + oldQueenPosition[0] + "," + oldQueenPosition[1] + "] to"
+                            + "[" + newQueenPosition[0] + "," + newQueenPosition[1] + "].\n"
+                            + "Arrow fired to [" + arrowPosition[0] + "," + arrowPosition[1] + "].");
+        }
+        else {
+            System.out.println(moveMessage);
+        }
+    }
+    
+    private void setupGUI(){
         guiFrame = new JFrame();
 
         guiFrame.setSize(800, 600);
@@ -36,7 +62,6 @@ public class CustomGame {
         contentPane.setLayout(new BorderLayout());
         contentPane.add(Box.createVerticalGlue());
 	
-        GameDisplay display = new GameDisplay(model);
         contentPane.add(display, BorderLayout.CENTER);
     }
 }
