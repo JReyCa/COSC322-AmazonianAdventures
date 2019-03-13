@@ -54,7 +54,6 @@ public class CustomGame {
         guiFrame.setTitle("Game of the Amazons - Team 01's Test!");	
 
         guiFrame.setLocation(200, 200);
-        guiFrame.setVisible(true);
         guiFrame.repaint();
         guiFrame.setLayout(null);
 
@@ -63,5 +62,8 @@ public class CustomGame {
         contentPane.add(Box.createVerticalGlue());
 	
         contentPane.add(display, BorderLayout.CENTER);
+        //guiFrame.setVisible(true) moved to below all additions to make board
+        // visual output consistent. 
+        guiFrame.setVisible(true);
     }
 }
