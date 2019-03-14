@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import javax.swing.Box;
 import javax.swing.JFrame;
+import ygraphs.ai.smart_fox.games.GameModel;
 
 /**
  *
@@ -14,17 +15,23 @@ public class CustomGame {
     private JFrame guiFrame;
     private BoardModel model;
     private GameDisplay display;
-    
-    public static void main(String[] args) {
-        CustomGame game = new CustomGame();
-    }
+    private String[][] boardSet; 
     
     public CustomGame() {
         this.model = new BoardModel(10);
-        this.display = new GameDisplay(this.model);
-        setupGUI();
+        this.display = new GameDisplay(this.model); 
         
-//        makeMove(9, 6, 8, 5, 8, 3, "test");
+}
+    public static void main(String[] args) {
+        CustomGame game = new CustomGame();
+        int[] wQueen1 = {0,3}; 
+        int[] move = {-1,4}; 
+        int[] arrow = {-1,8}; 
+       game.makeMove(wQueen1, move, arrow, "test");
+        
+        
+    
+         
     }
     
     

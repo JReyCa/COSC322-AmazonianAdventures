@@ -135,7 +135,7 @@ public class BoardModel extends GameModel {
         else if (position1[0] < position2[0])
             rowChange = 1;
         
-        if (position1[1] > position2[0])
+        if (position1[1] > position2[1])
             columnChange = -1;
         else if (position1[1] < position2[1]) {
             columnChange = 1;
@@ -143,9 +143,10 @@ public class BoardModel extends GameModel {
         
         // iterate through the tiles between the two (inclusive of the second)
         int r = position1[0], c = position1[1];
-        while (r != position2[0] + rowChange || c != position2[1] + columnChange) {
+        while (r != position2[0]  || c != position2[1] ) {
             r += rowChange;
             c += columnChange;
+            System.out.println(r + " " +c); 
             
             if (!gameBoard[r][c].equalsIgnoreCase(POS_AVAILABLE)) {
                 return false;
