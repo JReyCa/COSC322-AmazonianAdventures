@@ -70,7 +70,7 @@ public class BoardModel extends GameModel {
         setQueen(new int[] {7, 0}, false);
         setQueen(new int[] {7, 9}, false);
         setQueen(new int[] {9, 3}, false);
-        setQueen(new int[] {9, 6}, false);
+        setQueen(new int[] {9, 6}, false);  
     }
     
     // change the game model to reflect a valid move
