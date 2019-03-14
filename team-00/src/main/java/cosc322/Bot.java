@@ -11,46 +11,42 @@ package cosc322;
  */
 public class Bot {
     
-    private String playerColour = "";
-    private String heuristic = "";
+    private String playerColour = "uncoloured!";
+    private String botName = "nameless!";
+    private String botType = "untyped!";
+    
+    public static String DUMB = "dumb";
+    public static String FOEREIGN = "foreign";
+    
+    private BoardModel model;
 
-    public Bot(boolean white, String heuristicGiven) {
-        if (white){
-        this.playerColour = "white"; }
+    public Bot(boolean isWhite, String botName, String botType, BoardModel model) {
+        if (isWhite){
+            this.playerColour = "white"; }
         else {
             this.playerColour = "black";
         }
-        this.heuristic = heuristicGiven; 
+        
+        this.botType = botType;
+        this.model = model;
+        this.botName = botName;
     }
     
-    public void findPossibleMoves(){
-        if (heuristic.equals("minDist")){
-            
+    // 
+    
+    // try to make the specified move and print out the result
+    private boolean makeMove(int[] oldQueenPosition, int[] newQueenPosition, int[] arrowPosition) {
+        String moveMessage = model.makeMove(oldQueenPosition, newQueenPosition, arrowPosition);
+        
+        if (moveMessage.equalsIgnoreCase(model.VALID)) {
+            System.out.println(botName + ":\n"
+                            + "Queen at [" + oldQueenPosition[0] + "," + oldQueenPosition[1] + "] to "
+                            + "[" + newQueenPosition[0] + "," + newQueenPosition[1] + "].\n"
+                            + "Arrow fired to [" + arrowPosition[0] + "," + arrowPosition[1] + "].");
+            return true;
         }
         
+        System.out.println(moveMessage);
+        return false;
     }
-    public void minDistMoves(){
-        // 1. for each point, p, compare db = dist(p,Black) and dw = dist(p,white) 
-        // 2. if db < dw: Black point
-        // 3. else if db > dw: White point 
-        // 4. else point is neutral. 
-    }
-    
-    public void isMoveValid(){ 
-        // see if position selected is a queen. 
-        // see if position selected is an arrow. 
-        // see if position selected is horizontal, vertical, or diagonal away. 
-        // see if position selected has to go through arrow or queen to get there. 
-        
-        
-    }
-    
-    public void moveQueen(){ 
-        // look at all possible moves, pick the best, and move a queen there
-    } 
-    
-    public void shootArrow(){ 
-        // look at places around, select best place to shoot arrow. 
-    }
-    
 }

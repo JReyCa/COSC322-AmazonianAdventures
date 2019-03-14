@@ -1,5 +1,6 @@
 package cosc322;
 
+import java.util.ArrayList;
 import ygraphs.ai.smart_fox.games.GameModel;
 
 /**
@@ -23,7 +24,8 @@ public class BoardModel extends GameModel {
     public static final String IRREGULAR_ARROW = "Tried firing an arrow not in a straight line!";
     public static final String IRREGULAR_QUEEN_MOVE = "Tried moving a queen not in a straight line!";
     
-    private String[][] gameBoard = null;
+    private String[][] gameBoard = null;    // the 2D array of positions, with strings representing what's on them
+    public ArrayList<int[]> queenPositions = new ArrayList<int[]>(8); // all the positions of the queens
     
     public int getSize() {
         return gameBoard.length;
@@ -33,18 +35,19 @@ public class BoardModel extends GameModel {
         return gameBoard[row][column];
     }
     
-    public void setTile(int row, int column, String occupant) {
-        gameBoard[row][column] = occupant;
-    }
-    
-    // set a white or black queen at the specified tile (used for initialization)
-    public void setQueen(int row, int column, boolean isWhite) {
-        setTile(row, column, isWhite ? POS_MARKED_WHITE : POS_MARKED_BLACK);
+    public String getTile(int[] position) {
+        return gameBoard[position[0]][position[1]];
     }
     
     public BoardModel(int size) {
         gameBoard = new String[size][size];
         initialize(size);
+    }
+    
+    public BoardModel() {
+        gameBoard = new String[10][10];
+        initialize(10);
+        setAmazonsQueens();
     }
     
     // set up the board for game start
@@ -56,39 +59,39 @@ public class BoardModel extends GameModel {
                 gameBoard[i][j] = POS_AVAILABLE;
             }
         }
-        
-        // set the initial positions of the queens
-        setQueen(0, 3, true);
-        setQueen(0, 6, true);
-        setQueen(2, 0, true);
-        setQueen(2, 9, true);
-        setQueen(7, 0, false);
-        setQueen(7, 9, false);
-        setQueen(9, 3, false);
-        setQueen(9, 6, false);
+    }
+    
+    // set the initial positions of the queens for the amazons game
+    private void setAmazonsQueens() {
+        setQueen(new int[] {0, 3}, true);
+        setQueen(new int[] {0, 6}, true);
+        setQueen(new int[] {2, 0}, true);
+        setQueen(new int[] {2, 9}, true);
+        setQueen(new int[] {7, 0}, false);
+        setQueen(new int[] {7, 9}, false);
+        setQueen(new int[] {9, 3}, false);
+        setQueen(new int[] {9, 6}, false);
     }
     
     // change the game model to reflect a valid move
     // WARNING: the code below is exceedingly boring
-    public String makeMove(int[] oldQueenPosition,
-                           int[] newQueenPosition,
-                           int[] arrowPosition) {
+    public String makeMove(int[] oldQueenPosition, int[] newQueenPosition, int[] arrowPosition) {
         String message = VALID;
         
         // don't select positions that are out of bounds
-        if (isOutOfBounds(oldQueenPosition)) {
+        if (isOutOfBounds(oldQueenPosition, this)) {
             message = SELECTED_OUT_OF_BOUNDS;
         }
         // don't try to move empty positions
-        else if (gameBoard[oldQueenPosition[0]][oldQueenPosition[1]].equalsIgnoreCase(POS_AVAILABLE)) {
+        else if (getTile(oldQueenPosition).equalsIgnoreCase(POS_AVAILABLE)) {
             message = SELECTED_EMPTY;
         }
         // don't try to move arrows
-        else if (gameBoard[oldQueenPosition[0]][oldQueenPosition[1]].equalsIgnoreCase(POS_MARKED_ARROW)) {
+        else if (getTile(oldQueenPosition).equalsIgnoreCase(POS_MARKED_ARROW)) {
             message = SELECTED_ARROW;
         }
         // don't try to move a queen or fire an arrow out of bounds
-        else if (isOutOfBounds(newQueenPosition) || isOutOfBounds(arrowPosition)) {
+        else if (isOutOfBounds(newQueenPosition, this) || isOutOfBounds(arrowPosition, this)) {
             message = TARGET_OUT_OF_BOUNDS;
         }
         // don't move a queen non-orthagonally and non-diagonally
@@ -102,29 +105,28 @@ public class BoardModel extends GameModel {
             message = IRREGULAR_ARROW;
         }
         // don't try to move a queen to or fire an arrow at or through an occupied tile
-        else if (!pathIsClear(oldQueenPosition, newQueenPosition) ||
-                 !pathIsClear(newQueenPosition, arrowPosition)) {
+        else if (!pathIsClear(oldQueenPosition, newQueenPosition, this) ||
+                 !pathIsClear(newQueenPosition, arrowPosition, this)) {
             message = TARGET_OCCUPIED;
         }
         
         // if by some miracle the move is valid, make it so
         if (message.equalsIgnoreCase(VALID)) {
-            gameBoard[newQueenPosition[0]][newQueenPosition[1]] = gameBoard[oldQueenPosition[0]][oldQueenPosition[1]];
-            gameBoard[oldQueenPosition[0]][oldQueenPosition[1]] = POS_AVAILABLE;
-            gameBoard[arrowPosition[0]][arrowPosition[1]] = POS_MARKED_ARROW;
+            moveQueen(oldQueenPosition, newQueenPosition);
+            setTile(arrowPosition, POS_MARKED_ARROW);
         }
         
         return message;
     }
     
     // check whether a position is out of bounds
-    private boolean isOutOfBounds(int[] position) {
-        return position[0] < 0 || position[0] >= gameBoard.length ||
-               position[1] < 0 || position[1] >= gameBoard.length;
+    private static boolean isOutOfBounds(int[] position, BoardModel model) {
+        return position[0] < 0 || position[0] >= model.gameBoard.length ||
+               position[1] < 0 || position[1] >= model.gameBoard.length;
     }
     
-    // check whether the straight path between two positions is clear
-    private boolean pathIsClear(int[] position1, int[] position2) {
+    // check whether all positions between two positions are unoccupied
+    private static boolean pathIsClear(int[] position1, int[] position2, BoardModel model) {
         
         // determine the direction between the tiles
         int rowChange = 0;
@@ -141,14 +143,13 @@ public class BoardModel extends GameModel {
             columnChange = 1;
         }
         
-        // iterate through the tiles between the two (inclusive of the second)
+        // iterate through the positions between the two (inclusive of the second position)
         int r = position1[0], c = position1[1];
         while (r != position2[0]  || c != position2[1] ) {
             r += rowChange;
             c += columnChange;
-            System.out.println(r + " " +c); 
             
-            if (!gameBoard[r][c].equalsIgnoreCase(POS_AVAILABLE)) {
+            if (!model.gameBoard[r][c].equalsIgnoreCase(POS_AVAILABLE)) {
                 return false;
             }
         }
@@ -157,18 +158,39 @@ public class BoardModel extends GameModel {
     }
     
     // check whether two positions are the same
-    private boolean isSamePosition(int[] position1, int[] position2) {
+    private static boolean isSamePosition(int[] position1, int[] position2) {
         return position1[0] == position2[0] && position1[1] == position2[1];
     }
     
     // check whether two positions are diagonal, relative to each other
-    private boolean isDiagonal(int[] position1, int[] position2) {
+    private static boolean isDiagonal(int[] position1, int[] position2) {
         return Math.abs(position1[0] - position2[0]) - Math.abs(position1[1] - position2[1]) == 0;
     }
     
     // check whether two positions are orthagonal, relative to each other
-    private boolean isOrthagonal(int[] position1, int[] position2) {
+    private static boolean isOrthagonal(int[] position1, int[] position2) {
         return position1[0] == position2[0] && position1[1] != position2[1] ||
                position1[0] != position2[0] && position1[1] == position2[1];
+    }
+    
+    private void setTile(int[] position, String occupant) {
+        gameBoard[position[0]][position[1]] = occupant;
+    }
+    
+    // set a white or black queen at the specified position
+    private void setQueen(int[] position, boolean isWhite) {
+        setTile(position, isWhite ? POS_MARKED_WHITE : POS_MARKED_BLACK);
+        queenPositions.add(position);
+    }
+    
+    // remove the queen at the specified position
+    private void removeQueen(int[] position) {
+        setTile(position, POS_AVAILABLE);
+        queenPositions.removeIf(pos -> pos.equals(position));
+    }
+    
+    private void moveQueen(int[] position1, int[] position2) {
+        setQueen(position2, getTile(position1).equalsIgnoreCase(POS_MARKED_WHITE));
+        removeQueen(position1);
     }
 }
