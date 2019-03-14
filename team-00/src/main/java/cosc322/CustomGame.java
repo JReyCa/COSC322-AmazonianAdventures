@@ -47,7 +47,9 @@ public class CustomGame {
     }
     
     private void runTurn() {
-        
+        currentBot.makeMove();
+        display.repaint();
+        nextTurn();
     }
     
     // switch to the other player
@@ -82,7 +84,7 @@ public class CustomGame {
         public void run() {
             System.out.println("task started");
             
-            
+            runTurn();
             
             System.out.println("task ended");
         }

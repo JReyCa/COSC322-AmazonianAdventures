@@ -65,17 +65,27 @@ public class BoardModel extends GameModel {
     private void setAmazonsQueens() {
         setQueen(new int[] {0, 3}, true);
         setQueen(new int[] {0, 6}, true);
-        setQueen(new int[] {2, 0}, true);
-        setQueen(new int[] {2, 9}, true);
-        setQueen(new int[] {7, 0}, false);
-        setQueen(new int[] {7, 9}, false);
+        setQueen(new int[] {3, 0}, true);
+        setQueen(new int[] {3, 9}, true);
+        setQueen(new int[] {6, 0}, false);
+        setQueen(new int[] {6, 9}, false);
         setQueen(new int[] {9, 3}, false);
         setQueen(new int[] {9, 6}, false);  
     }
     
     // change the game model to reflect a valid move
+    public void makeMove(int[] oldQueenPosition, int[] newQueenPosition, int[] arrowPosition) {
+        moveQueen(oldQueenPosition, newQueenPosition);
+        setTile(arrowPosition, POS_MARKED_ARROW);
+    }
+    
+    public void makeMove(Move move) {
+        makeMove(move.getOldQueenPosition(), move.getNewQueenPosition(), move.getArrowPosition());
+    }
+    
+    // make sure that this move is valid! (especially for dumb bots)
     // WARNING: the code below is exceedingly boring
-    public String makeMove(int[] oldQueenPosition, int[] newQueenPosition, int[] arrowPosition) {
+    public String validateMove(int[] oldQueenPosition, int[] newQueenPosition, int[] arrowPosition) {
         String message = VALID;
         
         // don't select positions that are out of bounds
@@ -110,13 +120,11 @@ public class BoardModel extends GameModel {
             message = TARGET_OCCUPIED;
         }
         
-        // if by some miracle the move is valid, make it so
-        if (message.equalsIgnoreCase(VALID)) {
-            moveQueen(oldQueenPosition, newQueenPosition);
-            setTile(arrowPosition, POS_MARKED_ARROW);
-        }
-        
         return message;
+    }
+    
+    public String validateMove(Move move) {
+        return validateMove(move.getOldQueenPosition(), move.getNewQueenPosition(), move.getArrowPosition());
     }
     
     // check whether a position is out of bounds
