@@ -140,7 +140,7 @@ public class Amazons extends GamePlayer{
 		guiFrame.setTitle("Game of the Amazons (COSC 322, )" + this.userName());	
 		
 		guiFrame.setLocation(200, 200);
-		guiFrame.setVisible(true);
+		
 	    guiFrame.repaint();		
 		guiFrame.setLayout(null);
 		
@@ -151,6 +151,7 @@ public class Amazons extends GamePlayer{
 		
 		board = createGameBoard();		
 		contentPane.add(board,  BorderLayout.CENTER);
+                guiFrame.setVisible(true);
     }
     
     private GameBoard createGameBoard(){

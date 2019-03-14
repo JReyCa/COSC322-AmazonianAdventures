@@ -56,8 +56,8 @@ public class COSC322Test extends GamePlayer{
 	    + "the gameClient instance created in my constructor knows how!");
          ArrayList<String> rooms = gameClient.getRoomList();
          System.out.println(rooms);
-        // gameClient.joinRoom("Okanagan Lake");
-         // System.out.println("Room: Okanagan Lake, successfully joined");
+         gameClient.joinRoom("Okanagan Lake");
+          System.out.println("Room: Okanagan Lake, successfully joined");
 	this.gameClient.logout();
     }
     
@@ -65,4 +65,5 @@ public class COSC322Test extends GamePlayer{
     public String userName() {
 	return userName;
     }
+    
 }//end of class
