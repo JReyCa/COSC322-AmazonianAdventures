@@ -3,11 +3,14 @@ package cosc322;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.util.Date;
 import java.util.TimerTask;
 import javax.swing.Box;
 import javax.swing.JFrame;
 
 public class CustomGame {
+    private static final long MIN_TURN_LENGTH = 6000;
+    
     private JFrame guiFrame;        // the window that displays the game
     private BoardModel model;       // a wrapper for a 2D string array defining the board
     private GameDisplay display;    // this paints things on the JFrame
@@ -17,6 +20,7 @@ public class CustomGame {
     
     private String gameName = "unnamed";    // this is displayed on the header of the game window
     private boolean isWhiteTurn = true;     // is this the white player's turn, or the black player's turn?
+    private int turnCounter = 0;
     private Bot currentBot;                 // the player whose turn it currently is
     
     // **** MAIN METHOD! ****
@@ -82,11 +86,32 @@ public class CustomGame {
     
         @Override
         public void run() {
-            System.out.println("task started");
             
+            // figure out when the AI started its turn
+            Date startDate = new Date();
+            long startTime = startDate.getTime();
+            
+            // run the actual turn
             runTurn();
+            turnCounter++;
             
-            System.out.println("task ended");
+            // figure out when the AI was finished its turn and delay if it was crazy fast
+            Date endDate = new Date();
+            long endTime = endDate.getTime();
+            
+            long turnTime = endTime - startTime;
+            if (turnTime < MIN_TURN_LENGTH) {
+                try {
+                    Thread.sleep(MIN_TURN_LENGTH - turnTime);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            
+            // initiate the next turn
+            TurnTask next = new TurnTask();
+            next.run();
         }
     }
 }

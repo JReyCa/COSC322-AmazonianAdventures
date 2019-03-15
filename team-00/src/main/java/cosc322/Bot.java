@@ -7,13 +7,9 @@ package cosc322;
 
 import java.util.Random;
 
-/**
- *
- * @author EmilyEarl
- */
 public class Bot {
+    private boolean isWhite;
     
-    private String playerColour = "uncoloured!";
     private String botName = "nameless!";
     private String botType = "untyped!";
     
@@ -23,12 +19,7 @@ public class Bot {
     private BoardModel model;
 
     public Bot(boolean isWhite, String botName, String botType, BoardModel model) {
-        if (isWhite){
-            this.playerColour = "white"; }
-        else {
-            this.playerColour = "black";
-        }
-        
+        this.isWhite = isWhite;
         this.botType = botType;
         this.model = model;
         this.botName = botName;
@@ -42,7 +33,7 @@ public class Bot {
         System.out.println(botName + ":\n"
                         + "Queen at [" + move.getOldQueenPosition()[0] + "," + move.getOldQueenPosition()[1] + "] to "
                         + "[" + move.getNewQueenPosition()[0] + "," + move.getNewQueenPosition()[1] + "].\n"
-                        + "Arrow fired to [" + move.getArrowPosition()[0] + "," + move.getArrowPosition()[1] + "].");
+                        + "Arrow fired to [" + move.getArrowPosition()[0] + "," + move.getArrowPosition()[1] + "].\n");
     }
     
     // figure out what move to make based on what kind of AI we are
@@ -60,22 +51,34 @@ public class Bot {
         Random random = new Random();
         Move move;
         
+        // generate random moves and keep track of how much we fail
         int failCounter = 0;
         do {
-            int[] queenPosition = model.queenPositions.get(random.nextInt(model.queenPositions.size()));
+            
+            // find a random queen of the right colour
+            int[] queenPosition;
+            String chosenQueen;
+            do {
+                queenPosition = model.queenPositions.get(random.nextInt(model.queenPositions.size()));
+                chosenQueen = model.getTile(queenPosition);
+            }
+            while (chosenQueen.equalsIgnoreCase(isWhite ? BoardModel.POS_MARKED_BLACK : BoardModel.POS_MARKED_WHITE));
+            
+            // find random locations to move the queen to and fire the arrow at
             int[] targetPosition = new int[] {random.nextInt(model.getSize()), random.nextInt(model.getSize())};
             int[] arrowPosition = new int[] {random.nextInt(model.getSize()), random.nextInt(model.getSize())};
         
             move = new Move(queenPosition, targetPosition, arrowPosition);
             
-            if (failCounter >= 100) {
+            // if we failed too much, just call it quits
+            if (failCounter >= 300) {
                 System.out.println("The dumb bot was too dumb to find a valid move with 100 tries!");
                 System.exit(0);
             }
             
             failCounter++;
         }
-        while(!model.validateMove(move).equalsIgnoreCase(model.VALID));
+        while (!model.validateMove(move).equalsIgnoreCase(model.VALID));
         
         return move;
     }

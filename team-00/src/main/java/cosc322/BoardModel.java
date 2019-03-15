@@ -3,10 +3,6 @@ package cosc322;
 import java.util.ArrayList;
 import ygraphs.ai.smart_fox.games.GameModel;
 
-/**
- *
- * @author julian
- */
 public class BoardModel extends GameModel {
     // these strings denote what can occupy a position on the board
     public static final String POS_MARKED_BLACK = "black";
