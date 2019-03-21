@@ -181,7 +181,7 @@ public class BoardModel extends GameModel {
                position1[0] != position2[0] && position1[1] == position2[1];
     }
     
-    private void setTile(int[] position, String occupant) {
+    public void setTile(int[] position, String occupant) {
         gameBoard[position[0]][position[1]] = occupant;
     }
     
@@ -197,7 +197,7 @@ public class BoardModel extends GameModel {
         queenPositions.removeIf(pos -> pos.equals(position));
     }
     
-    private void moveQueen(int[] position1, int[] position2) {
+    public void moveQueen(int[] position1, int[] position2) {
         setQueen(position2, getTile(position1).equalsIgnoreCase(POS_MARKED_WHITE));
         removeQueen(position1);
     }
