@@ -17,12 +17,16 @@ public class OnlineGame extends Game {
     private int roomNumber;
     private String username;
     
+    private String heuristic;
+    
     public OnlineGame(String heuristic, String username, String password, int roomNumber) {
         super("Showdown");
         
         client = new GameClient(username, password, this);
         this.username = username;
         this.roomNumber = roomNumber;
+        
+        this.heuristic = heuristic;
     }
     
     // called when the client object is set
@@ -44,12 +48,12 @@ public class OnlineGame extends Game {
 	    boolean weAreWhite = ((String) messageDetails.get("player-white")).equals(this.userName());
             System.out.println("We're playing as the " + (weAreWhite ? "white" : "black") + " player");
             
-            Bot bot1 = Bot.netBot(weAreWhite, Bot.DUMB, super.getModel());
-            Bot bot2 = Bot.foreignBot(weAreWhite, super.getModel());
-            super.initialize(bot1, bot2, weAreWhite);
+            Bot bot1 = Bot.netBot(weAreWhite, heuristic, super.getModel());
+            Bot bot2 = Bot.foreignBot(!weAreWhite, super.getModel());
+//            super.initialize(bot1, bot2, weAreWhite);
 	}
         else if(messageType.equals(GameMessage.GAME_ACTION_MOVE)){
-	    
+	    System.out.println(messageDetails);
 	}
         
         return true;
