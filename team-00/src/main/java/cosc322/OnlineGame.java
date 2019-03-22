@@ -75,7 +75,11 @@ public class OnlineGame extends Game {
     @Override
     public void runTurn(Move move) {
         if (getCurrentBot() == getBot1()) {
-            client.sendMoveMessage(move.getOldQueenPosition(), move.getNewQueenPosition(), move.getArrowPosition());
+            int[] oldWithOffset = new int[] { move.getOldQueenPosition()[0] + 1, move.getOldQueenPosition()[1] + 1 };
+            int[] newWithOffset = new int[] { move.getNewQueenPosition()[0] + 1, move.getNewQueenPosition()[1] + 1 };
+            int[] arrowWithOffset = new int[] { move.getArrowPosition()[0] + 1, move.getArrowPosition()[1] + 1 };
+            
+            client.sendMoveMessage(oldWithOffset, newWithOffset, arrowWithOffset);
         }
         
         super.runTurn(move);
@@ -86,8 +90,13 @@ public class OnlineGame extends Game {
 	int[] oldQueenPosition = convertDetail((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR));
 	int[] newQueenPosition = convertDetail((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.Queen_POS_NEXT));
 	int[] arrowPosition = convertDetail((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS));
+        
+        int[] oldWithOffset = new int[] { oldQueenPosition[0] - 1, oldQueenPosition[1] - 1 };
+        int[] newWithOffset = new int[] { newQueenPosition[0] - 1, newQueenPosition[1] - 1 };
+        int[] arrowWithOffset = new int[] { arrowPosition[0] - 1, arrowPosition[1] - 1 };
+        
         System.out.println(msgDetails);
-        LocalTask next = new LocalTask(new Move(oldQueenPosition, newQueenPosition, arrowPosition));
+        LocalTask next = new LocalTask(new Move(oldWithOffset, newWithOffset, arrowWithOffset));
         next.run();
     }
     

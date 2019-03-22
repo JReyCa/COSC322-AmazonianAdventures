@@ -87,7 +87,7 @@ public class Bot {
             case Bot.DUMB:
                 return pickDumbMove();
             case Bot.MINMAX:
-                return null;
+                return minMax.pickMinMaxMove(model, isWhite);
             default:
                 return null;
         }

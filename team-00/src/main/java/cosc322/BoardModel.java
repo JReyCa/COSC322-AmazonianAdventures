@@ -190,9 +190,10 @@ public class BoardModel extends GameModel {
     // remove the queen at the specified position
     private void removeQueen(int[] position) {
         setTile(position, POS_AVAILABLE);
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < queenPositions.size(); i++){
             if (queenPositions.get(i)[0] == position[0] && queenPositions.get(i)[1] == position[1]){
                 queenPositions.remove(i);
+                break;
             }
         }
     }

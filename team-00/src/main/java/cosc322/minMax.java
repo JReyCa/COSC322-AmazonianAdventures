@@ -27,6 +27,11 @@ public class minMax {
     // positions belong to which player (black or white). 
     static String[][] ownedBy = new String[10][10];
     static boolean amIWhitePlayer;
+    
+    private static final int ALPHA_DEFAULT = -10000000;
+    private static final int BETA_DEFAULT = 10000000;
+    
+    
     static int alpha = -10000000;
     static int beta = 10000000;
     static int score = -1000000;
@@ -60,8 +65,25 @@ public class minMax {
         playBestMove(boardTest);
 
     }
+    
+    // **** THIS IS WHAT WE CALL FROM THE OUTSIDE WORLD ****
+    public static Move pickMinMaxMove(BoardModel model, boolean isWhite) {
+        applyMinMax(3, model, true, minMax.alpha, minMax.beta, isWhite, 3);
+        ArrayList<int[]> move = playBestMove(model);
+        
+        reset();
+        return new Move(move.get(0), move.get(1), move.get(2));
+    }
+    // *****************************************************
+    
+    private static void reset() {
+        alpha = ALPHA_DEFAULT;
+        beta = BETA_DEFAULT;
+        
+        maxMinMoves.clear();
+    }
 
-    public static void playBestMove(BoardModel model) {
+    public static ArrayList<int[]> playBestMove(BoardModel model) {
         int maxVal = 0;
         ArrayList<int[]> bestMove = new ArrayList<int[]>();
         for (int i = 0; i < maxMinMoves.size(); i++) {
@@ -69,11 +91,12 @@ public class minMax {
                 bestMove = maxMinMoves.get(i);
             }
         }
-        model.makeMove(bestMove.get(0), bestMove.get(1), bestMove.get(2));
-        System.out.println(bestMove.get(0)[0] + " " + bestMove.get(0)[1] + " Old Queen");
-        System.out.println(bestMove.get(1)[0] + " " + bestMove.get(1)[1]+ " New Queen");
-        System.out.println(bestMove.get(2)[0] + " " + bestMove.get(2)[1] + "Arrow");
-
+//        model.makeMove(bestMove.get(0), bestMove.get(1), bestMove.get(2));
+//        System.out.println(bestMove.get(0)[0] + " " + bestMove.get(0)[1] + " Old Queen");
+//        System.out.println(bestMove.get(1)[0] + " " + bestMove.get(1)[1]+ " New Queen");
+//        System.out.println(bestMove.get(2)[0] + " " + bestMove.get(2)[1] + "Arrow");
+        
+        return bestMove;
     }
 
     // need to apply the min-max algorithm to determine the best move
@@ -195,14 +218,7 @@ public class minMax {
                  model.setTile(children.get(i).get(2), POS_AVAILABLE);
                  
                  minEval = min(minEval, childVal);
-                 if (d == startDepth){
-                     ArrayList<int[]> blah = new ArrayList<int[]>();
-                     blah.add(children.get(i).get(0));
-                     blah.add(children.get(i).get(1));
-                     blah.add(children.get(i).get(2));
-                     blah.add(new int[] {childVal});
-                     maxMinMoves.add(blah);
-                 }
+             
                  minMax.beta = min(minEval, minMax.beta);
                  if (minMax.alpha >= minMax.beta )
                      break;
@@ -237,9 +253,22 @@ public class minMax {
                                 // System.out.println(x+" "+y);
                                 if (arrowMoves[x][y] == 1) {
                                     move.add(currentQueen);
+                                    
+                                    int[] newPos = new int[]{i,j};
                                     move.add(new int[]{i,j});
+                                    
+                                    int[] arrowPos = new int[]{x,y};
                                     move.add(new int[]{x,y});
-                                    possMoves.add(move);
+                                    
+                                    Move handyMove = new Move(currentQueen, newPos, arrowPos);
+                                    String validationMessage = model.validateMove(handyMove);
+                                    if (validationMessage.equalsIgnoreCase(BoardModel.VALID)) {
+                                        possMoves.add(move);
+                                    } else {
+                                        System.out.println(handyMove.toString());
+                                        System.out.println(model.getTile(currentQueen));
+                                        System.out.println(validationMessage);
+                                    }
                                 }
                             }
                         }
