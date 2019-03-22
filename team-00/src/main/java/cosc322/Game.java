@@ -54,7 +54,7 @@ public abstract class Game extends GamePlayer {
         this.bot2 = bot2;
         setupGUI();
         
-        currentBot = bot1Starts ? bot1 : bot2;
+        currentBot = bot1Starts ? bot2 : bot1;
         startTurn();
     }
     
@@ -82,7 +82,7 @@ public abstract class Game extends GamePlayer {
     //************
     
     private void startTurn() {
-        TurnTask next = new TurnTask();
+        LocalTask next = new LocalTask();
         next.run();
     }
     
@@ -92,7 +92,7 @@ public abstract class Game extends GamePlayer {
     }
     
     // this class creates a coroutine
-    public class TurnTask extends TimerTask {
+    public class LocalTask extends TimerTask {
     
         @Override
         public void run() {
