@@ -50,13 +50,29 @@ public class OnlineGame extends Game {
             
             Bot bot1 = Bot.netBot(weAreWhite, heuristic, super.getModel());
             Bot bot2 = Bot.foreignBot(!weAreWhite, super.getModel());
-//            super.initialize(bot1, bot2, weAreWhite);
+            super.initialize(bot1, bot2, weAreWhite);
 	}
         else if(messageType.equals(GameMessage.GAME_ACTION_MOVE)){
 	    System.out.println(messageDetails);
 	}
         
         return true;
+    }
+    
+    @Override
+    public void startTurn() {
+        if (isBot1sTurn()) {
+            LocalTask next = new LocalTask();
+            next.run();
+        } else {
+            
+        }
+    }
+    
+    @Override
+    public void runTurn(Move move) {
+        super.runTurn(move);
+        client.sendMoveMessage(move.getOldQueenPosition(), move.getNewQueenPosition(), move.getArrowPosition());
     }
     
     //handle the event that the opponent makes a move. 
