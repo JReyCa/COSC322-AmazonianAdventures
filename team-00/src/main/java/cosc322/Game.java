@@ -81,14 +81,16 @@ public abstract class Game extends GamePlayer {
     }
     //************
     
-    private void startTurn() {
-        LocalTask next = new LocalTask();
-        next.run();
+    public abstract void startTurn();
+    
+    public void runTurn(Move move) {
+        currentBot.makeMove(move);
+        display.repaint();
+        currentBot = isBot1sTurn() ? bot2 : bot1;
     }
     
-    // switch to the other player so they can make a move
-    private void switchPlayers() {
-        currentBot = isBot1sTurn() ? bot2 : bot1;
+    public Move retrieveMove() {
+        return currentBot.pickMove();
     }
     
     // this class creates a coroutine
@@ -101,11 +103,7 @@ public abstract class Game extends GamePlayer {
             Date startDate = new Date();
             long startTime = startDate.getTime();
             
-            // run the actual turn
-            Move move = currentBot.pickMove();
-            System.out.println(currentBot.makeMove(move));
-            display.repaint();
-            switchPlayers();
+            runTurn(retrieveMove());
             
             // figure out when the AI was finished its turn and delay if it was crazy fast
             Date endDate = new Date();

@@ -66,7 +66,7 @@ public class BoardModel extends GameModel {
         setQueen(new int[] {6, 0}, false);
         setQueen(new int[] {6, 9}, false);
         setQueen(new int[] {9, 3}, false);
-        setQueen(new int[] {9, 6}, false);
+        setQueen(new int[] {9, 6}, false);  
     }
     
     // change the game model to reflect a valid move
@@ -177,7 +177,7 @@ public class BoardModel extends GameModel {
                position1[0] != position2[0] && position1[1] == position2[1];
     }
     
-    private void setTile(int[] position, String occupant) {
+    public void setTile(int[] position, String occupant) {
         gameBoard[position[0]][position[1]] = occupant;
     }
     
@@ -190,11 +190,17 @@ public class BoardModel extends GameModel {
     // remove the queen at the specified position
     private void removeQueen(int[] position) {
         setTile(position, POS_AVAILABLE);
-        queenPositions.removeIf(pos -> pos.equals(position));
+        for (int i = 0; i < 8; i++){
+            if (queenPositions.get(i)[0] == position[0] && queenPositions.get(i)[1] == position[1]){
+                queenPositions.remove(i);
+            }
+        }
     }
     
-    private void moveQueen(int[] position1, int[] position2) {
+    public void moveQueen(int[] position1, int[] position2) {
         setQueen(position2, getTile(position1).equalsIgnoreCase(POS_MARKED_WHITE));
         removeQueen(position1);
+       
+        
     }
 }
