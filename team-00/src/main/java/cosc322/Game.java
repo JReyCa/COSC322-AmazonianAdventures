@@ -3,16 +3,11 @@ package cosc322;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
 import java.util.TimerTask;
 import javax.swing.Box;
 import javax.swing.JFrame;
 
-import ygraphs.ai.smart_fox.GameMessage;
-import ygraphs.ai.smart_fox.games.AmazonsGameMessage;
-import ygraphs.ai.smart_fox.games.GameClient;
 import ygraphs.ai.smart_fox.games.GamePlayer;
 
 public abstract class Game extends GamePlayer {
@@ -37,6 +32,7 @@ public abstract class Game extends GamePlayer {
     
     public Bot getBot1() { return bot1; }
     public Bot getBot2() { return bot2; }
+    public Bot getCurrentBot() { return currentBot; }
     
     public boolean isBot1sTurn() { return currentBot == bot1; }
     // ************
@@ -105,11 +101,6 @@ public abstract class Game extends GamePlayer {
     
         @Override
         public void run() {
-//            try {
-//                Thread.sleep(MIN_TURN_LENGTH);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             
             // figure out when the AI started its turn
             Date startDate = new Date();
@@ -122,14 +113,14 @@ public abstract class Game extends GamePlayer {
             long endTime = endDate.getTime();
             
             long turnTime = endTime - startTime;
-//            if (turnTime < MIN_TURN_LENGTH) {
-//                try {
-//                    Thread.sleep(MIN_TURN_LENGTH - turnTime);
-//                }
-//                catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+            if (turnTime < MIN_TURN_LENGTH) {
+                try {
+                    Thread.sleep(MIN_TURN_LENGTH - turnTime);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             
             startTurn();
         }

@@ -11,6 +11,7 @@ public class Bot {
     // heuristic types (or 'foreign' when representing another machine)
     public static final String DUMB = "dumb";
     public static final String FOREIGN = "foreign";
+    public static final String MINMAX = "minmax";
     
     private boolean isWhite;
     private boolean isOnline;
@@ -85,6 +86,8 @@ public class Bot {
         switch(botType) {
             case Bot.DUMB:
                 return pickDumbMove();
+            case Bot.MINMAX:
+                return null;
             default:
                 return null;
         }
@@ -115,8 +118,8 @@ public class Bot {
             move = new Move(queenPosition, targetPosition, arrowPosition);
             
             // if we failed too much, just call it quits
-            if (failCounter >= 300) {
-                System.out.println("The dumb bot was too dumb to find a valid move with 100 tries!");
+            if (failCounter >= 5000) {
+                System.out.println("The dumb bot was too dumb to find a valid move with a gazillion tries!");
                 System.exit(0);
             }
             
