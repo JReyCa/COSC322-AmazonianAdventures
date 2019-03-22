@@ -108,7 +108,7 @@ public class minMax {
     // TIP: this is techincally the NegaMax algorithm with alpha beta pruning involved. 
     public static int applyMinMax(int d, BoardModel model, boolean maximizingTeam, int alpha, int beta, boolean whiteTeam, int startDepth) {
         //base case, figure out determinaion of game over
-
+        
         // printMap(model);
         // System.out.println("Depth: "+d);
         if (d == 0) {
@@ -150,6 +150,7 @@ public class minMax {
             // considering this move was played. 
             
             //find all children from this state
+             
             ArrayList<ArrayList<int[]>> children = findAllMoves(model, myQueens);
             
             for(int i=0; i < children.size(); i++ ){
@@ -167,6 +168,7 @@ public class minMax {
                      blah.add(children.get(i).get(1));
                      blah.add(children.get(i).get(2));
                      blah.add(new int[] {childVal});
+                     
                      maxMinMoves.add(blah);
                  }
                  minMax.alpha = max(maxEval, minMax.alpha);
@@ -201,6 +203,7 @@ public class minMax {
                      blah.add(children.get(i).get(1));
                      blah.add(children.get(i).get(2));
                      blah.add(new int[] {childVal});
+                    
                      maxMinMoves.add(blah);
                  }
                  minMax.beta = min(minEval, minMax.beta);
@@ -213,7 +216,7 @@ public class minMax {
     }
 
     public static ArrayList<ArrayList<int[]>> findAllMoves(BoardModel model, ArrayList<int[]> myQueens) {
-
+       
         ArrayList<ArrayList<int[]>> possMoves = new ArrayList<ArrayList<int[]>>();
         ArrayList<int[]> move = new ArrayList<int[]>();
        
@@ -230,6 +233,7 @@ public class minMax {
                         // arrows can move the exact same as queens, so we can use the queen moves
                         // check on the queen that has just been relocated. 
                         int[][] arrowMoves = queenMoves(new int[]{i, j}, model);
+                        model.moveQueen(new int[]{i, j}, currentQueen);
                         //arrowsLoop:
                         for (int x = 0; x < arrowMoves.length - 1; x++) {
                             arrowsLoop:
@@ -239,12 +243,17 @@ public class minMax {
                                     move.add(currentQueen);
                                     move.add(new int[]{i,j});
                                     move.add(new int[]{x,y});
-                                    possMoves.add(move);
+                                    Move testingThings = new Move(currentQueen, new int[] {i,j}, new int[] {x,y});
+                                    String isValid = model.validateMove(testingThings);
+                                    if (isValid.equals(BoardModel.VALID)){
+                                        possMoves.add(move);
+                                    }
+                                    
                                 }
                             }
                         }
                         //move Queen back
-                        model.moveQueen(new int[]{i, j}, currentQueen);
+                        
                     }
                 }
 
