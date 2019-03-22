@@ -20,7 +20,7 @@ public class LocalGame extends Game {
     
     @Override
     public void startTurn() {
-        LocalTask next = new LocalTask();
+        LocalTask next = new LocalTask(retrieveMove());
         next.run();
     }
     

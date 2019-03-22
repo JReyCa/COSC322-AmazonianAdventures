@@ -50,10 +50,10 @@ public class OnlineGame extends Game {
             
             Bot bot1 = Bot.netBot(weAreWhite, heuristic, super.getModel());
             Bot bot2 = Bot.foreignBot(!weAreWhite, super.getModel());
-            super.initialize(bot1, bot2, weAreWhite);
+            super.initialize(bot1, bot2, !weAreWhite);
 	}
         else if(messageType.equals(GameMessage.GAME_ACTION_MOVE)){
-	    System.out.println(messageDetails);
+            handleOpponentMove(messageDetails);
 	}
         
         return true;
@@ -62,7 +62,7 @@ public class OnlineGame extends Game {
     @Override
     public void startTurn() {
         if (isBot1sTurn()) {
-            LocalTask next = new LocalTask();
+            LocalTask next = new LocalTask(retrieveMove());
             next.run();
         } else {
             
@@ -71,23 +71,28 @@ public class OnlineGame extends Game {
     
     @Override
     public void runTurn(Move move) {
-        super.runTurn(move);
         client.sendMoveMessage(move.getOldQueenPosition(), move.getNewQueenPosition(), move.getArrowPosition());
+        super.runTurn(move);
     }
-    
-    
     
     //handle the event that the opponent makes a move. 
     private void handleOpponentMove(Map<String, Object> msgDetails){
-	ArrayList<Integer> oldQueenPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
-	ArrayList<Integer> newQueenPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.Queen_POS_NEXT);
-	ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
-        
-        
+	int[] oldQueenPosition = convertDetail((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR));
+	int[] newQueenPosition = convertDetail((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.Queen_POS_NEXT));
+	int[] arrowPosition = convertDetail((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS));
+        System.out.println(msgDetails);
+        LocalTask next = new LocalTask(new Move(oldQueenPosition, newQueenPosition, arrowPosition));
+        next.run();
+    }
+    
+    private int[] convertDetail(ArrayList<Integer> detail) {
+        return new int[] { detail.get(0), detail.get(1) };
     }
     
     @Override
     public String userName() {
         return username;
     }
+    
+    
 }

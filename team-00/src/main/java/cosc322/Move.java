@@ -25,4 +25,10 @@ public class Move {
         this.newQ = newQ;
         this.arrow = arrow;
     }
+    
+    public String toString() {
+        return "Queen at [" + oldQ[0] + "," + oldQ[1] + "] to "
+            + "[" + newQ[0] + "," + newQ[1] + "].\n"
+            + "Arrow fired to [" + arrow[0] + "," + arrow[1] + "].\n";
+    }
 }
