@@ -50,10 +50,13 @@ public class OnlineGame extends Game {
             
             Bot bot1 = Bot.netBot(weAreWhite, heuristic, super.getModel());
             Bot bot2 = Bot.foreignBot(!weAreWhite, super.getModel());
+            
             super.initialize(bot1, bot2, !weAreWhite);
 	}
         else if(messageType.equals(GameMessage.GAME_ACTION_MOVE)){
-            handleOpponentMove(messageDetails);
+            if (getCurrentBot() == getBot2()) {
+                handleOpponentMove(messageDetails);
+            }
 	}
         
         return true;
@@ -71,7 +74,10 @@ public class OnlineGame extends Game {
     
     @Override
     public void runTurn(Move move) {
-        client.sendMoveMessage(move.getOldQueenPosition(), move.getNewQueenPosition(), move.getArrowPosition());
+        if (getCurrentBot() == getBot1()) {
+            client.sendMoveMessage(move.getOldQueenPosition(), move.getNewQueenPosition(), move.getArrowPosition());
+        }
+        
         super.runTurn(move);
     }
     
