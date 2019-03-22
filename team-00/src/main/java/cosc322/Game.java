@@ -54,7 +54,7 @@ public abstract class Game extends GamePlayer {
         this.bot2 = bot2;
         setupGUI();
         
-        currentBot = bot1Starts ? bot2 : bot1;
+        currentBot = bot1Starts ? bot1 : bot2;
         startTurn();
     }
     
@@ -86,6 +86,8 @@ public abstract class Game extends GamePlayer {
     public void runTurn(Move move) {
         currentBot.makeMove(move);
         display.repaint();
+        System.out.println(currentBot.getBotName() + ": \n" + move.toString());
+        
         currentBot = isBot1sTurn() ? bot2 : bot1;
     }
     
@@ -95,29 +97,39 @@ public abstract class Game extends GamePlayer {
     
     // this class creates a coroutine
     public class LocalTask extends TimerTask {
+        private Move move;
+        
+        public LocalTask(Move move) {
+            this.move = move;
+        }
     
         @Override
         public void run() {
+//            try {
+//                Thread.sleep(MIN_TURN_LENGTH);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             
             // figure out when the AI started its turn
             Date startDate = new Date();
             long startTime = startDate.getTime();
             
-            runTurn(retrieveMove());
+            runTurn(move);
             
             // figure out when the AI was finished its turn and delay if it was crazy fast
             Date endDate = new Date();
             long endTime = endDate.getTime();
             
             long turnTime = endTime - startTime;
-            if (turnTime < MIN_TURN_LENGTH) {
-                try {
-                    Thread.sleep(MIN_TURN_LENGTH - turnTime);
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            if (turnTime < MIN_TURN_LENGTH) {
+//                try {
+//                    Thread.sleep(MIN_TURN_LENGTH - turnTime);
+//                }
+//                catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             
             startTurn();
         }

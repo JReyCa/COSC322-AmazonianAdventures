@@ -60,12 +60,12 @@ public class Bot {
             System.exit(0);
         }
         
-        return new Bot(isWhite, "Net Bot", botType, model, true);
+        return new Bot(isWhite, "Valiant Exemplar", botType, model, true);
     }
     
     // a bot that represents the actions of the enemy player on the server
     public static Bot foreignBot(boolean isWhite, BoardModel model) {
-        return new Bot(isWhite, "Foreign Bot", FOREIGN, model, false);
+        return new Bot(isWhite, "Dark Nemisis", FOREIGN, model, false);
     }
     
     private String nameBot(boolean isWhite, String type, String baseName) {
@@ -76,13 +76,8 @@ public class Bot {
     // ********
     
     // try to make the specified move and print out the result
-    public String makeMove(Move move) {
+    public void makeMove(Move move) {
         model.makeMove(move);
-        
-        return botName + ":\n"
-            + "Queen at [" + move.getOldQueenPosition()[0] + "," + move.getOldQueenPosition()[1] + "] to "
-            + "[" + move.getNewQueenPosition()[0] + "," + move.getNewQueenPosition()[1] + "].\n"
-            + "Arrow fired to [" + move.getArrowPosition()[0] + "," + move.getArrowPosition()[1] + "].\n";
     }
     
     // figure out what move to make based on what kind of AI we are
