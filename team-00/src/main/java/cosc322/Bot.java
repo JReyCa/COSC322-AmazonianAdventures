@@ -8,36 +8,85 @@ package cosc322;
 import java.util.Random;
 
 public class Bot {
+    // heuristic types (or 'foreign' when representing another machine)
+    public static final String DUMB = "dumb";
+    public static final String FOREIGN = "foreign";
+    
     private boolean isWhite;
+    private boolean isOnline;
     
     private String botName = "nameless!";
     private String botType = "untyped!";
     
-    public static final String DUMB = "dumb";
-    public static final String FOEREIGN = "foreign";
-    
     private BoardModel model;
-
-    public Bot(boolean isWhite, String botName, String botType, BoardModel model) {
+    
+    public String getBotName() {
+        return botName;
+    }
+    
+    public String getBotType() {
+        return botType;
+    }
+    
+    public void setColour(boolean colour) {
+        isWhite = colour;
+        nameBot(colour, botType, "Net Bot");
+    }
+    
+    //**** INSTANTIATION ****
+    // constructor
+    private Bot(boolean isWhite, String baseName, String botType, BoardModel model, boolean isOnline) {
         this.isWhite = isWhite;
         this.botType = botType;
         this.model = model;
-        this.botName = botName;
+        this.isOnline = isOnline;
+        this.botName = nameBot(isWhite, botType, baseName);
     }
     
+    // a bot for testing locally
+    public static Bot testBot(boolean isWhite, String botType, BoardModel model) {
+        if (botType.equalsIgnoreCase(FOREIGN)) {
+            System.out.println("Don't create a test bot as 'foreign'");
+            System.exit(0);
+        }
+        
+        return new Bot(isWhite, "Test Bot", botType, model, false);
+    }
+    
+    // a bot for competing through the server in the tournament
+    public static Bot netBot(boolean isWhite, String botType, BoardModel model) {
+        if (botType.equalsIgnoreCase(FOREIGN)) {
+            System.out.println("Don't create a net bot as 'foreign'");
+            System.exit(0);
+        }
+        
+        return new Bot(isWhite, "Net Bot", botType, model, true);
+    }
+    
+    // a bot that represents the actions of the enemy player on the server
+    public static Bot foreignBot(boolean isWhite, BoardModel model) {
+        return new Bot(isWhite, "Foreign Bot", FOREIGN, model, false);
+    }
+    
+    private String nameBot(boolean isWhite, String type, String baseName) {
+        String colourName = " (" + (isWhite ? "white" : "black") + ")";
+        String typeName = " - " + type;
+        return baseName + typeName + colourName;
+    }
+    // ********
+    
     // try to make the specified move and print out the result
-    public void makeMove() {
-        Move move = pickMove();
+    public String makeMove(Move move) {
         model.makeMove(move);
         
-        System.out.println(botName + ":\n"
-                        + "Queen at [" + move.getOldQueenPosition()[0] + "," + move.getOldQueenPosition()[1] + "] to "
-                        + "[" + move.getNewQueenPosition()[0] + "," + move.getNewQueenPosition()[1] + "].\n"
-                        + "Arrow fired to [" + move.getArrowPosition()[0] + "," + move.getArrowPosition()[1] + "].\n");
+        return botName + ":\n"
+            + "Queen at [" + move.getOldQueenPosition()[0] + "," + move.getOldQueenPosition()[1] + "] to "
+            + "[" + move.getNewQueenPosition()[0] + "," + move.getNewQueenPosition()[1] + "].\n"
+            + "Arrow fired to [" + move.getArrowPosition()[0] + "," + move.getArrowPosition()[1] + "].\n";
     }
     
     // figure out what move to make based on what kind of AI we are
-    private Move pickMove() {
+    public Move pickMove() {
         switch(botType) {
             case Bot.DUMB:
                 return pickDumbMove();
