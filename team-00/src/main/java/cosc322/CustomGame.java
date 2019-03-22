@@ -12,6 +12,7 @@ public class CustomGame {
     private BoardModel model;       // a wrapper for a 2D string array defining the board
     private GameDisplay display;    // this paints things on the JFrame
     
+    
     private Bot whiteBot;   // represents the player controlling the white queens
     private Bot blackBot;   // represents the player controlling the black queens
     
