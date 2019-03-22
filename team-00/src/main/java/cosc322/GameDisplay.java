@@ -36,6 +36,7 @@ public class GameDisplay extends JPanel {
     }
     
     // this is a mysterious jframe method
+    @Override
     protected void paintComponent(Graphics gg){
         Graphics g = (Graphics2D) gg;
 
@@ -70,6 +71,7 @@ public class GameDisplay extends JPanel {
     }
     
     // another mysterious jframe method!
+    @Override
     public Dimension getPreferredSize() {
         return new Dimension(500,500);
     }
