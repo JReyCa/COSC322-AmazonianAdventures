@@ -237,6 +237,7 @@ public class minMax {
         for (int peanut = 0; peanut < myQueens.size(); peanut++) {
             int[] currentQueen = myQueens.get(peanut);
             int[][] moves = queenMoves(currentQueen, model);
+    
             for (int i = 0; i < moves.length - 1; i++) {
                 for (int j = 0; j < moves[0].length - 1; j++) {
                     if (moves[i][j] == 1) {
@@ -246,6 +247,7 @@ public class minMax {
                         // arrows can move the exact same as queens, so we can use the queen moves
                         // check on the queen that has just been relocated. 
                         int[][] arrowMoves = queenMoves(new int[]{i, j}, model);
+                        model.moveQueen(new int[]{i, j}, currentQueen);
                         //arrowsLoop:
                         for (int x = 0; x < arrowMoves.length - 1; x++) {
                             arrowsLoop:
@@ -263,8 +265,8 @@ public class minMax {
                                     Move handyMove = new Move(currentQueen, newPos, arrowPos);
                                     String validationMessage = model.validateMove(handyMove);
                                     if (validationMessage.equalsIgnoreCase(BoardModel.VALID)) {
+                                        System.out.println("found valid move");
                                         possMoves.add(move);
-                                    } else {
                                         System.out.println(handyMove.toString());
                                         System.out.println(model.getTile(currentQueen));
                                         System.out.println(validationMessage);
@@ -273,7 +275,7 @@ public class minMax {
                             }
                         }
                         //move Queen back
-                        model.moveQueen(new int[]{i, j}, currentQueen);
+                        
                     }
                 }
 
