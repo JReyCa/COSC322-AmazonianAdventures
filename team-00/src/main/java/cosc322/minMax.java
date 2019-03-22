@@ -31,7 +31,7 @@ public class minMax {
     static int beta = 10000000;
     static int score = -1000000;
     static int count = 0;
-    static allPossibleMoves maxMinMoves = new allPossibleMoves();
+    static ArrayList<ArrayList<int[]>> maxMinMoves = new ArrayList<ArrayList<int[]>>();
 
     // we just need to find where the value is maximum and the depth is the original d provided;
     // step 1. populate the arraylist with possible moves 
@@ -39,44 +39,41 @@ public class minMax {
     // step 3. actually play that move on the board. 
     public static void main(String[] args) {
         int[][] test = queenMoves(new int[]{0, 3}, new BoardModel());
-       // for (int i = 0; i < test.length; i++) {
-         //   for (int j = 0; j < test.length; j++) {
-           //     System.out.print(" " + test[i][j]);
-            //}
-            //System.out.println("");
+        // for (int i = 0; i < test.length; i++) {
+        //   for (int j = 0; j < test.length; j++) {
+        //     System.out.print(" " + test[i][j]);
+        //}
+        //System.out.println("");
         //}
         //calculateOwnership(new BoardModel());
         //for (int i = 0; i < ownedBy.length; i++) {
-         //   for (int j = 0; j < ownedBy.length; j++) {
-          //      System.out.print(" " + ownedBy[i][j]);
-           // }
-            //System.out.println("");
-       // }
-      // CustomGame testing = new CustomGame("this is test"); 
+        //   for (int j = 0; j < ownedBy.length; j++) {
+        //      System.out.print(" " + ownedBy[i][j]);
+        // }
+        //System.out.println("");
+        // }
+        // CustomGame testing = new CustomGame("this is test"); 
         BoardModel boardTest = new BoardModel();
         minMax minMaxTest = new minMax();
-        applyMinMax(10,boardTest,true, minMax.alpha, minMax.beta, true, 10);
+        applyMinMax(3, boardTest, true, minMax.alpha, minMax.beta, true, 3);
         System.out.println("end of code");
         playBestMove(boardTest);
-        
-        
+
     }
-    
-    public static void playBestMove(BoardModel model){
-        int maxVal = 0; 
-        possibleMove bestMove = null;
-        for (int i = 0; i < maxMinMoves.size(); i++){
-            if (maxMinMoves.get(i).whiteOwns > maxVal && model.getTile(maxMinMoves.get(i).oldQueenLoc).equals("white"))
+
+    public static void playBestMove(BoardModel model) {
+        int maxVal = 0;
+        ArrayList<int[]> bestMove = new ArrayList<int[]>();
+        for (int i = 0; i < maxMinMoves.size(); i++) {
+            if (maxMinMoves.get(i).get(3)[0] > maxVal) {
                 bestMove = maxMinMoves.get(i);
-            System.out.println("BestMoveshit: "+ model.getTile((maxMinMoves.get(i).oldQueenLoc)));
-            System.out.println("Max min list size: "+maxMinMoves.size());
+            }
         }
-        model.makeMove(bestMove.oldQueenLoc, bestMove.newQueenLoc, bestMove.arrowLoc);
-        System.out.println(bestMove.oldQueenLoc.toString() + " Old Queen");
-        System.out.println(bestMove.newQueenLoc.toString() + " New Queen");
-        System.out.println(bestMove.arrowLoc.toString() + "Arrow");
-        
-        
+        model.makeMove(bestMove.get(0), bestMove.get(1), bestMove.get(2));
+        System.out.println(bestMove.get(0)[0] + " " + bestMove.get(0)[1] + " Old Queen");
+        System.out.println(bestMove.get(1)[0] + " " + bestMove.get(1)[1]+ " New Queen");
+        System.out.println(bestMove.get(2)[0] + " " + bestMove.get(2)[1] + "Arrow");
+
     }
 
     // need to apply the min-max algorithm to determine the best move
@@ -109,21 +106,221 @@ public class minMax {
     // need to instantiate some form of an arraylist or something to hold all of the possible
     // moves and successor moves. TODO: 
     // TIP: this is techincally the NegaMax algorithm with alpha beta pruning involved. 
-    
     public static int applyMinMax(int d, BoardModel model, boolean maximizingTeam, int alpha, int beta, boolean whiteTeam, int startDepth) {
         //base case, figure out determinaion of game over
-         
-        
-       // printMap(model);
-        
-       // System.out.println("Depth: "+d);
-        
+
+        // printMap(model);
+        // System.out.println("Depth: "+d);
         if (d == 0) {
-            calculateOwnership(model);
+           return baseCase(model, whiteTeam);
+        }
+
+        //allPossibleMoves moveTree = new allPossibleMoves();
+        int[] currentQueen;
+        ArrayList<int[]> whiteQueens = new ArrayList<>();
+        ArrayList<int[]> blackQueens = new ArrayList<>();
+        ArrayList<int[]> myQueens = new ArrayList<>();
+        // possibleMove bestestMove = null;
+
+        for (int count = 0; count < model.queenPositions.size(); count++) {
+            if (model.getTile(model.queenPositions.get(count)).equals(POS_MARKED_BLACK)) {
+                blackQueens.add(model.queenPositions.get(count));
+                //  System.out.println("Black: "+model.getTile(model.queenPositions.get(count)));
+            } else {
+                whiteQueens.add(model.queenPositions.get(count));
+                // System.out.println("White: "+model.getTile(model.queenPositions.get(count)));
+            }
+        }
+        //  System.out.println("White Queens identified as: " + whiteQueens.get(0)[0] + "" + whiteQueens.get(0)[1] + " " + whiteQueens.get(1)[0] + whiteQueens.get(1)[1] + " " + whiteQueens.get(2)[0] + whiteQueens.get(2)[1] + " " + whiteQueens.get(3)[0] + whiteQueens.get(3)[1]);
+        //if (whiteTeam) {
+        //    myQueens = whiteQueens;
+        //} else {
+        //   myQueens = blackQueens;
+        // }
+        // perform a check to see which side we are on. 
+
+        if (maximizingTeam) {
+            System.out.println("Maximizing turn");
+            if(whiteTeam)
+                 myQueens = whiteQueens;
+            else
+                myQueens = blackQueens;
+            
+            int maxEval = -1000000;
+            // considering this move was played. 
+            
+            //find all children from this state
+            ArrayList<ArrayList<int[]>> children = findAllMoves(model, myQueens);
+            
+            for(int i=0; i < children.size(); i++ ){
+                
+                 model.moveQueen(children.get(i).get(0), children.get(i).get(1));
+                 model.setTile(children.get(i).get(2), POS_MARKED_ARROW);
+                 int childVal = applyMinMax(d-1, model,false,alpha, beta, whiteTeam, startDepth);
+                 model.moveQueen(children.get(i).get(1), children.get(i).get(0));
+                 model.setTile(children.get(i).get(2), POS_AVAILABLE);
+                 
+                 maxEval = max(maxEval, childVal);
+                 if (d == startDepth){
+                     ArrayList<int[]> blah = new ArrayList<int[]>();
+                     blah.add(children.get(i).get(0));
+                     blah.add(children.get(i).get(1));
+                     blah.add(children.get(i).get(2));
+                     blah.add(new int[] {childVal});
+                     maxMinMoves.add(blah);
+                 }
+                 minMax.alpha = max(maxEval, minMax.alpha);
+                 if (minMax.alpha >= minMax.beta )
+                     break;
+            }
+            return maxEval;
+        
+        } else {
+            System.out.println("Minimizing turn");
+             if(whiteTeam)
+                myQueens = blackQueens;
+            else
+                myQueens = whiteQueens;
+    
+            int minEval = 1000000;
+          //find all children from this state
+            ArrayList<ArrayList<int[]>> children = findAllMoves(model, myQueens);
+            
+            for(int i=0; i < children.size(); i++ ){
+                
+                 model.moveQueen(children.get(i).get(0), children.get(i).get(1));
+                 model.setTile(children.get(i).get(2), POS_MARKED_ARROW);
+                 int childVal = applyMinMax(d-1, model,true,alpha, beta, whiteTeam, startDepth);
+                 model.moveQueen(children.get(i).get(1), children.get(i).get(0));
+                 model.setTile(children.get(i).get(2), POS_AVAILABLE);
+                 
+                 minEval = min(minEval, childVal);
+                 if (d == startDepth){
+                     ArrayList<int[]> blah = new ArrayList<int[]>();
+                     blah.add(children.get(i).get(0));
+                     blah.add(children.get(i).get(1));
+                     blah.add(children.get(i).get(2));
+                     blah.add(new int[] {childVal});
+                     maxMinMoves.add(blah);
+                 }
+                 minMax.beta = min(minEval, minMax.beta);
+                 if (minMax.alpha >= minMax.beta )
+                     break;
+            }
+            return minEval;
+
+    }
+    }
+
+    public static ArrayList<ArrayList<int[]>> findAllMoves(BoardModel model, ArrayList<int[]> myQueens) {
+
+        ArrayList<ArrayList<int[]>> possMoves = new ArrayList<ArrayList<int[]>>();
+        ArrayList<int[]> move = new ArrayList<int[]>();
+       
+        
+        for (int peanut = 0; peanut < myQueens.size(); peanut++) {
+            int[] currentQueen = myQueens.get(peanut);
+            int[][] moves = queenMoves(currentQueen, model);
+            for (int i = 0; i < moves.length - 1; i++) {
+                for (int j = 0; j < moves[0].length - 1; j++) {
+                    if (moves[i][j] == 1) {
+                        // need to move queen independent of making an arrow shot 
+                        model.moveQueen(currentQueen, new int[]{i, j});
+                        // step 3. test every possible arrow 
+                        // arrows can move the exact same as queens, so we can use the queen moves
+                        // check on the queen that has just been relocated. 
+                        int[][] arrowMoves = queenMoves(new int[]{i, j}, model);
+                        //arrowsLoop:
+                        for (int x = 0; x < arrowMoves.length - 1; x++) {
+                            arrowsLoop:
+                            for (int y = 0; y < arrowMoves[0].length - 1; y++) {
+                                // System.out.println(x+" "+y);
+                                if (arrowMoves[x][y] == 1) {
+                                    move.add(currentQueen);
+                                    move.add(new int[]{i,j});
+                                    move.add(new int[]{x,y});
+                                    possMoves.add(move);
+                                }
+                            }
+                        }
+                        //move Queen back
+                        model.moveQueen(new int[]{i, j}, currentQueen);
+                    }
+                }
+
+            }
+        }
+        return possMoves;
+    }
+
+    public static void printMap(BoardModel model) {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                System.out.print(model.getTile(new int[]{i, j}) + " ");
+
+            }
+            System.out.println();
+        
+
+}
+    }
+
+    static class bestMove {
+
+    int value;
+    possibleMove best;
+
+}
+
+static class allPossibleMoves {
+
+    static ArrayList<possibleMove> allMoves;
+
+    allPossibleMoves() {
+        allMoves = new ArrayList<possibleMove>();
+    }
+
+    public static void add(possibleMove newMove) {
+        allMoves.add(newMove);
+    }
+
+    public static int size() {
+        return allMoves.size();
+    }
+
+    public static possibleMove get(int i) {
+        return allMoves.get(i);
+    }
+}
+
+static class possibleMove {
+
+    int depth;
+    int[] oldQueenLoc;
+    int[] newQueenLoc;
+    int[] arrowLoc;
+    int whiteOwns;
+    int blackOwns;
+
+    possibleMove(int depth, int[] oldQueenLoc, int[] newQueenLoc, int[] arrowLoc, int white, int black) {
+        this.depth = depth;
+        this.oldQueenLoc = oldQueenLoc;
+        this.newQueenLoc = newQueenLoc;
+        this.arrowLoc = arrowLoc;
+        this.whiteOwns = white;
+        this.blackOwns = black;
+
+    }
+}
+
+public static int baseCase(BoardModel model, boolean white){
+    
+     calculateOwnership(model);
             int numWhite = 0;
             int numBlack = 0;
-            for (int u = 0; u < ownedBy.length; u++) {
-                for (int v = 0; v < ownedBy.length; v++) {
+            for (int u = 0; u < 10; u++) {
+                for (int v = 0; v < 10; v++) {
+
                     if (ownedBy[u][v].equals("white")) {
                         numWhite++;
                     }
@@ -132,268 +329,14 @@ public class minMax {
                     }
                 }
             }
-          //  System.out.println("number of white: " + numWhite);
-            return numWhite; 
+    if(white)
+        return numWhite;
+    else
+        return numBlack;
+}
 
-        }
 
-        //allPossibleMoves moveTree = new allPossibleMoves();
-        int[] currentQueen;
-        ArrayList<int[]> whiteQueens = new ArrayList<>();
-        ArrayList<int[]> blackQueens = new ArrayList<>();
-        ArrayList<int[]> myQueens = new ArrayList<>();
-       // possibleMove bestestMove = null;
-
-        for (int count = 0; count < model.queenPositions.size(); count++) {
-            if (model.getTile(model.queenPositions.get(count)).equals(POS_MARKED_BLACK)) {
-                blackQueens.add(model.queenPositions.get(count));
-              //  System.out.println("Black: "+model.getTile(model.queenPositions.get(count)));
-            } else {
-                whiteQueens.add(model.queenPositions.get(count));
-               // System.out.println("White: "+model.getTile(model.queenPositions.get(count)));
-            }
-        }
-      //  System.out.println("White Queens identified as: " + whiteQueens.get(0)[0] + "" + whiteQueens.get(0)[1] + " " + whiteQueens.get(1)[0] + whiteQueens.get(1)[1] + " " + whiteQueens.get(2)[0] + whiteQueens.get(2)[1] + " " + whiteQueens.get(3)[0] + whiteQueens.get(3)[1]);
-       //if (whiteTeam) {
-        //    myQueens = whiteQueens;
-        //} else {
-         //   myQueens = blackQueens;
-       // }
-        // perform a check to see which side we are on. 
-        
-        if (maximizingTeam) {
-            myQueens = whiteQueens;
-            //System.out.println("Maximizing turn");
-            int maxEval = -1000000;
-            for (int peanut = 0; peanut < myQueens.size(); peanut++) {
-                currentQueen = myQueens.get(peanut);
-              //  System.out.println("CurrentQueen generation: "+model.getTile(currentQueen));
-
-                int[][] moves = queenMoves(currentQueen, model);
-                for (int i = 0; i < moves.length-1; i++) {
-                    for (int j = 0; j < moves[0].length-1; j++) {
-                        if (moves[i][j] == 1) {
-                            // need to move queen independent of making an arrow shot 
-                            model.moveQueen(currentQueen, new int[]{i, j});
-                            // step 3. test every possible arrow 
-                            // arrows can move the exact same as queens, so we can use the queen moves
-                            // check on the queen that has just been relocated. 
-                            int[][] arrowMoves = queenMoves(new int[]{i, j}, model);
-                            arrowsLoop:
-                            for (int x = 0; x < arrowMoves.length-1; x++) {
-                                for (int y = 0; y < arrowMoves[0].length-1; y++) {
-                                   // System.out.println(x+" "+y);
-                                    if (arrowMoves[x][y] == 1) {
-                                        model.setTile(new int[]{x, y}, POS_MARKED_ARROW);
-                                        // now, we need to calculate who owns which part of the board
-                                        // considering this move was played. 
-                                        calculateOwnership(model);
-                                        int numWhite = 0;
-                                        int numBlack = 0;
-                                        for (int u = 0; u < 10; u++) {
-                                            for (int v = 0; v < 10; v++) {
-                                              
-                                                if (ownedBy[u][v].equals("white")) {
-                                                    numWhite++;
-                                                }
-                                                if (ownedBy[u][v].equals("black")) {
-                                                    numBlack++;
-                                                }
-                                            }
-                                        }
-                                        
-                                        //System.out.println("White calc: "+numWhite+" Black calc: "+numBlack);
-                                        // possibly dont need the code below? (2 lines) 
-                                        
-                                        //still need to actually count this esteemed "value" thing. 
-                                       // System.out.println("Recursion should happen here");
-                                        int child = applyMinMax((d-1), model, false, alpha, beta, !whiteTeam, startDepth);
-                                       // System.out.println("Recursion return to Maxteam");
-                                        int childVal = child;
-                                       // System.out.println("Value of white owned: "+childVal);
-                                        possibleMove newMove = new possibleMove(d, currentQueen, new int[]{i, j}, new int[]{x, y}, numWhite, numBlack);
-                                      //  System.out.println(newMove.depth);
-                                        if (childVal > maxEval) {
-                                            // bestestMove = child;
-                                            maxEval = childVal;
-                                            newMove.whiteOwns = childVal;
-                                        }
-                                    //    System.out.println("I am a "+model.getTile(currentQueen));
-                                        if (newMove.depth == startDepth) {
-                                            minMax.count = minMax.count+1;
-                                            maxMinMoves.add(newMove);
-                                         //   System.out.println("Added to the list!");
-                                        }
-                                        // return the board to its original state 
-                                        model.setTile(new int[]{x, y}, POS_AVAILABLE);
-                                        model.moveQueen(new int[]{i, j}, currentQueen);
-                                     //   System.out.println("Child Value: "+childVal+" maxEval: "+maxEval);
-                                        minMax.alpha = max(minMax.alpha, maxEval);
-                                      //  System.out.println("Alpha: "+minMax.alpha+" Beta: "+minMax.beta);
-                                        if (minMax.beta <= minMax.alpha) {
-                                    //        System.out.println("Hello, I snuck up on ya ");
-                                         
-                                            break arrowsLoop;
-                                        }
-                                        
-
-                                        // need to figure out how to return a best value as well as a best move 
-                                        // SOLVED
-                                    }
-                                }
-                            }
-                            
-                        }
-                        
-                    }
-                }
-
-            }
-            return maxEval;
-        }
-        
-        else {
-            myQueens = blackQueens;
-          //  System.out.println("Minimizingteam");
-            int minEval = 1000000;
-            for (int peanut = 0; peanut < myQueens.size(); peanut++) {
-                currentQueen = myQueens.get(peanut);
-                int[][] moves = queenMoves(currentQueen, model);
-                for (int i = 0; i < moves.length-1; i++) {
-                    for (int j = 0; j < moves[0].length-1; j++) {
-                        if (moves[i][j] == 1) {
-                            // need to move queen independent of making an arrow shot 
-                            model.moveQueen(currentQueen, new int[]{i, j});
-                            calculateOwnership(model);
-                            // step 3. test every possible arrow 
-                            // arrows can move the exact same as queens, so we can use the queen moves
-                            // check on the queen that has just been relocated. 
-                            int[][] arrowMoves = queenMoves(new int[]{i, j}, model);
-                            arrowsLoop:
-                            for (int x = 0; x < arrowMoves.length-1; x++) {
-                                for (int y = 0; y < arrowMoves[0].length-1; y++) {
-                                    if (arrowMoves[x][y] == 1) {
-                                        model.setTile(new int[]{x, y}, POS_MARKED_ARROW);
-                                      //  printMap(model);
-                                        // now, we need to calculate who owns which part of the board
-                                        // considering this move was played. 
-                                        calculateOwnership(model);
-                                        int numWhite = 0;
-                                        int numBlack = 0;
-                                        for (int u = 0; u < ownedBy.length-1; u++) {
-                                            for (int v = 0; v < ownedBy.length-1; v++) {
-                                             //   System.out.print(ownedBy[u][v] + " ");
-                                                if (ownedBy[u][v].equals("white")) {
-                                                    numWhite++;
-                                                    
-                                                }
-                                                if (ownedBy[u][v].equals("black")) {
-                                                    numBlack++;
-                                                }
-                                            }
-                                          //  System.out.println();
-                                        }
-                                        
-                                        // System.out.println("White calc: "+numWhite+" Black calc: "+numBlack);
-                                        // possibly dont need the code below? (2 lines) 
-                                        // possibleMove newMove = new possibleMove(d, currentQueen, new int[]{i, j}, new int[]{x, y}, numWhite, numBlack);
-                                        //moveTree.add(newMove);
-
-                                        //still need to actually count this esteemed "value" thing. 
-                                        int child = applyMinMax(d - 1, model, true, alpha, beta, whiteTeam, startDepth);
-                                       // System.out.println("Recursion return to Minteam");
-                                        int childVal = child;
-                                      //  System.out.println("minmizer Child: "+childVal);
-                                        possibleMove newMove = new possibleMove(d, currentQueen, new int[]{i, j}, new int[]{x, y}, numWhite, numBlack);
-                                        if (childVal < minEval) {
-                                            //bestestMove = child;
-                                            minEval = childVal;
-                                        //    System.out.println("Mineval in if statement: " + minEval);
-                                            newMove.whiteOwns = childVal;
-
-                                        }
-                                        model.setTile(new int[]{x, y}, POS_AVAILABLE);
-                                        model.moveQueen(new int[]{i, j}, currentQueen);
-                                       // System.out.println("Child: "+childVal+" Beta: "+minMax.beta);
-                                        minMax.beta = min(minEval, minMax.beta);
-                                      //  System.out.println("Beta: "+minMax.beta);
-                                     //   System.out.println("Alpha: " + minMax.alpha);
-                                        if (minMax.beta <= minMax.alpha) {
-                                            break arrowsLoop;
-                                        }
-                                        
-
-                                        // need to figure out how to return a best value as well as a best move 
-                                    }
-                                }
-                            }
-                            
-                        }
-                        
-                    }
-                }
-
-            }
-            return minEval;
-        }
-    }
-
-    public static void printMap(BoardModel model){
-        for  (int i = 0; i < 10; i++){
-            for (int j = 0; j < 10; j++){
-                System.out.print( model.getTile(new int[] {i,j}) + " ");
-                        
-            }
-            System.out.println();
-        }
-    }
-    static class bestMove {
-
-        int value;
-        possibleMove best;
-
-    }
-
-    static class allPossibleMoves {
-
-        static ArrayList<possibleMove> allMoves;
-
-        allPossibleMoves() {
-            allMoves = new ArrayList<possibleMove>(); 
-        }
-
-        public static void add(possibleMove newMove) {
-            allMoves.add(newMove);
-        }
-        public static int size(){
-            return allMoves.size(); 
-        }
-        public static possibleMove get(int i){
-            return allMoves.get(i);
-        }
-    }
-
-    static class possibleMove {
-
-        int depth;
-        int[] oldQueenLoc;
-        int[] newQueenLoc;
-        int[] arrowLoc;
-        int whiteOwns;
-        int blackOwns;
-
-        possibleMove(int depth, int[] oldQueenLoc, int[] newQueenLoc, int[] arrowLoc, int white, int black) {
-            this.depth = depth;
-            this.oldQueenLoc = oldQueenLoc;
-            this.newQueenLoc = newQueenLoc;
-            this.arrowLoc = arrowLoc;
-            this.whiteOwns = white;
-            this.blackOwns = black;
-
-        }
-    }
-
-    public static void calculateOwnership(BoardModel model) {
+public static void calculateOwnership(BoardModel model) {
 
         // if number < current Numer and greater than zero, replace. 
         // if number == current Number and greater than zero and colours same - do nothing
@@ -414,9 +357,8 @@ public class minMax {
                     }
 
                     ownedBy[r][c] = closestQueen;
-                }
-                else {
-                    ownedBy[r][c] = model.getTile(new int[] {r,c});
+                } else {
+                    ownedBy[r][c] = model.getTile(new int[]{r, c});
                 }
             }
         }
