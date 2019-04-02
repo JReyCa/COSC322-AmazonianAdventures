@@ -78,6 +78,10 @@ public class Bot {
     
     // try to make the specified move and print out the result
     public void makeMove(Move move) {
+        if(move.getArrowPosition()[0]<0){
+            System.out.println("I lost!");
+            System.exit(0);
+        }
         model.makeMove(move);
     }
     

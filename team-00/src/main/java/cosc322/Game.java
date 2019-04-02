@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import ygraphs.ai.smart_fox.games.GamePlayer;
 
 public abstract class Game extends GamePlayer {
-    private static final long MIN_TURN_LENGTH = 4000;
+    private static final long MIN_TURN_LENGTH = 400;
     private static final long MAX_TURN_LENGTH = 30000;
     
     // these are the essentials for displaying the game and tracking the moves
